@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Simple definitions of DAO, DTO, Entity Framework, ACID, relational databases, and document databases."
+    />
+    <title>Database concepts: simple definitions</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css"
+    />
+    <style>
+      :root {
+        --background: #10151f;
+        --panel: #192231;
+        --text: #f2f5fa;
+        --muted: #b3bfd0;
+        --accent: #62dfdc;
+      }
+
+      body {
+        background: var(--background);
+      }
+      .reveal-viewport {
+        background: var(--background);
+      }
+      .reveal {
+        color: var(--text);
+        font-family: "Aptos", "Segoe UI", sans-serif;
+        font-size: 28px;
+      }
+      .reveal .slides {
+        text-align: left;
+      }
+      .reveal h1,
+      .reveal h2 {
+        color: var(--text);
+        font-family: inherit;
+        letter-spacing: -0.03em;
+        text-transform: none;
+      }
+      .reveal h1 {
+        font-size: 2.8em;
+      }
+      .reveal h2 {
+        font-size: 2.25em;
+        color: var(--accent);
+      }
+      .reveal h3 {
+        font-size: 1em;
+      }
+      .reveal p {
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .reveal strong {
+        color: var(--text);
+      }
+      .reveal code {
+        color: var(--accent);
+      }
+      .reveal .controls,
+      .reveal .progress {
+        color: var(--accent);
+      }
+      .reveal .progress {
+        height: 4px;
+      }
+      .eyebrow {
+        color: var(--accent) !important;
+        font-size: 0.6em;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .definition {
+        max-width: 1080px;
+        padding: 30px 34px;
+        border: 1px solid #2e3b4f;
+        border-radius: 16px;
+        background: var(--panel);
+        font-size: 1.2em;
+      }
+      .example {
+        max-width: 1080px;
+        margin-top: 0.65em !important;
+        padding: 16px 20px;
+        border-left: 5px solid var(--accent);
+        border-radius: 0 12px 12px 0;
+        background: #1b2836;
+        color: var(--text) !important;
+        font-size: 0.9em;
+      }
+      .example::before {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--accent);
+        content: "IN PRACTICE";
+        font-size: 0.68em;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+      }
+      .tag {
+        display: inline-block;
+        margin-top: 1em;
+        padding: 0.35em 0.75em;
+        border: 1px solid #40516a;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 0.65em;
+      }
+      .c4-boundary {
+        padding: 14px;
+        border: 2px solid #62dfdc;
+        border-radius: 12px;
+        background: #141c29;
+      }
+      .c4-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(190px, 0.85fr);
+        align-items: center;
+        gap: 14px;
+      }
+      .host-label {
+        margin-bottom: 12px;
+        color: var(--accent);
+        font-size: 0.8em;
+        font-weight: 700;
+      }
+      .module-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        align-items: stretch;
+      }
+      .module {
+        padding: 14px;
+        border: 1px solid #35455c;
+        border-radius: 10px;
+        background: var(--panel);
+      }
+      .module.database-container {
+        align-self: center;
+        border: 2px dashed #ffcf70;
+        background: #25241f;
+      }
+      .module h3 {
+        margin: 0 0 10px;
+        color: var(--text);
+        font-size: 0.9em;
+      }
+      .module.database-container h3 {
+        color: #ffcf70;
+      }
+      .layer {
+        margin-top: 7px;
+        padding: 10px 12px;
+        border-radius: 7px;
+        background: #243247;
+        color: var(--muted);
+        font-size: 0.68em;
+      }
+      .flow-label {
+        margin: 7px 0;
+        color: var(--accent);
+        font-size: 0.62em;
+        text-align: center;
+      }
+      .module-link {
+        margin: 10px 0;
+        color: var(--accent) !important;
+        font-size: 0.68em;
+        text-align: center;
+      }
+      .architecture-note {
+        margin-top: 10px !important;
+        font-size: 0.68em;
+      }
+      .architecture-note a {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .database-container p {
+        margin: 10px 0 0;
+        font-size: 0.62em;
+      }
+      .c4-reference {
+        color: var(--accent) !important;
+        font-weight: 700;
+        text-decoration: underline;
+      }
+      .dao-slide .definition,
+      .acid-slide .definition {
+        padding: 20px 26px;
+      }
+      .dao-slide .example,
+      .acid-slide .example {
+        padding: 11px 16px;
+      }
+      .dao-slide .example {
+        font-size: 0.84em;
+      }
+      .acid-slide .example {
+        font-size: 0.82em;
+      }
+      .acid-list {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px 12px;
+        margin: 12px 0 !important;
+        padding: 0 !important;
+        list-style: none;
+      }
+      .acid-list li {
+        margin: 0 !important;
+        padding: 10px 14px;
+        border: 1px solid #35455c;
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 0.9em;
+      }
+      .acid-list strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="eyebrow">A quick guide</p>
+          <h1>Database concepts</h1>
+        </section>
+
+        <section>
+          <p class="eyebrow">Domain and data model</p>
+          <h2>Entity</h2>
+          <div class="definition">
+            An <strong>entity</strong> is an object that represents something
+            the application cares about and can identify over time. It has an
+            identity and data; in a domain model, it may also enforce rules
+            about how it can change.
+          </div>
+          <p class="example">
+            For example, an <code>Order</code> entity has an ID, customer, and
+            status. EF Core can map that .NET class to a database table and its
+            instances to rows, but an entity is an application object—not just a
+            row or a DTO.
+          </p>
+        </section>
+
+        <section class="dao-slide">
+          <p class="eyebrow">Data access</p>
+          <h2>DAO</h2>
+          <div class="definition">
+            A <strong>Data Access Object</strong> (DAO) is a way to organize
+            database communication in dedicated code. It separates data
+            retrieval and changes from application logic, centralizing
+            operations such as creating, reading, updating, and deleting data.
+          </div>
+          <p class="example">
+            DAO methods can be reused by different parts of an application for
+            consistent data access. They may run SQL directly or use EF Core,
+            which translates LINQ queries into SQL. In .NET,
+            <code>DbContext</code> already provides data access:
+            <code>DbSet</code> queries entities, changes are tracked, and
+            <code>SaveChanges</code> sends updates to the database. A separate
+            DAO is optional; avoid adding one if it only repeats EF Core's
+            existing methods.
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Data exchange</p>
+          <h2>DTO</h2>
+          <div class="definition">
+            A <strong>Data Transfer Object</strong> (DTO) is a simple data
+            shape for carrying selected information across a boundary, such as
+            an API or between modules. Request DTOs describe input; response
+            DTOs define the data the application chooses to expose.
+          </div>
+          <p class="example">
+            Unlike an EF Core entity, a DTO is designed for the caller—not for
+            persistence. It can omit internal fields, flatten relationships
+            (for example, return a customer name instead of a customer object),
+            and keep the API contract stable if the database model changes.
+            DTOs are not tracked as entities by EF Core and normally carry data,
+            not business rules. Validate input and authorize access separately.
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">.NET data tools</p>
+          <h2>Entity Framework (EF)</h2>
+          <div class="definition">
+            <strong>Entity Framework Core (EF Core)</strong> is Microsoft's
+            object-relational mapper (ORM) for .NET. It maps .NET entity classes
+            to database structures, translates LINQ queries, tracks changes, and
+            writes updates through a database provider.
+          </div>
+          <p class="example">
+            A <code>DbContext</code> coordinates queries and changes;
+            <code>SaveChanges</code> persists them. EF Core commonly connects a
+            .NET application to a relational database, but it is not itself the
+            database. Migrations help evolve the schema.
+          </p>
+        </section>
+
+        <section class="acid-slide">
+          <p class="eyebrow">Reliable transactions</p>
+          <h2>ACID</h2>
+          <div class="definition">
+            <strong>ACID</strong> describes four guarantees that help database
+            transactions behave reliably:
+          </div>
+          <ul class="acid-list">
+            <li>
+              <strong>Atomicity</strong>All operations succeed together, or none
+              of them do.
+            </li>
+            <li>
+              <strong>Consistency</strong>A transaction preserves the database's
+              rules and constraints.
+            </li>
+            <li>
+              <strong>Isolation</strong>Concurrent work is separated according
+              to the database's isolation level.
+            </li>
+            <li>
+              <strong>Durability</strong>Committed changes persist, even after a
+              failure.
+            </li>
+          </ul>
+          <p class="example">
+            EF Core's <code>SaveChanges</code> is transactional when supported
+            by the provider. Use an explicit transaction to group multiple
+            saves; ACID guarantees apply within that transaction.
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Database types</p>
+          <h2>Relational database</h2>
+          <div class="definition">
+            A <strong>relational database</strong> stores data in tables with
+            defined columns. Primary and foreign keys connect rows; constraints
+            protect rules such as required values and unique identifiers. SQL is
+            commonly used to query and update the data.
+          </div>
+          <p class="example">
+            EF Core is often used with relational databases such as SQL Server,
+            PostgreSQL and MySQL. A transaction can update related rows
+            together, while foreign keys help prevent references to missing
+            records.
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Database types</p>
+          <h2>Document database</h2>
+          <div class="definition">
+            A <strong>document database</strong> stores records as documents,
+            commonly JSON-like objects that can contain nested data. Documents
+            can have different shapes, which can suit data that naturally
+            belongs together or changes over time.
+          </div>
+          <p class="example">
+            Examples include MongoDB and Azure Cosmos DB. Flexible structure is
+            not the absence of design: the application still needs validation
+            and clear ownership. Data modeling, querying and transaction
+            guarantees differ from relational databases.
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">C4 container view · .NET modular monolith</p>
+          <h2>Deployable app, separate database</h2>
+          <div class="c4-layout">
+            <div class="c4-boundary">
+              <div class="host-label">
+                CONTAINER: ASP.NET CORE MODULAR MONOLITH
+              </div>
+              <div class="module-grid">
+                <div class="module">
+                  <h3>Orders module · components</h3>
+                  <div class="layer">Orders controller</div>
+                  <div class="flow-label">request / response DTOs ↓ ↑</div>
+                  <div class="layer">Orders application service</div>
+                  <div class="flow-label">uses directly ↓</div>
+                  <div class="layer">EF Core · DbContext / persistence</div>
+                </div>
+                <div class="module">
+                  <h3>Catalog module · components</h3>
+                  <div class="layer">Catalog service + domain rules</div>
+                  <div class="layer">Catalog entities · module-owned data</div>
+                  <div class="flow-label">Module API uses DTOs, not table access</div>
+                </div>
+              </div>
+            </div>
+            <div class="module database-container">
+              <h3>Container: database</h3>
+              <div class="layer">Relational database</div>
+              <div class="flow-label">SQL · EF Core provider</div>
+              <p>A separate data store and runtime boundary—not a component inside the app.</p>
+            </div>
+          </div>
+          <p class="module-link">
+            Controller → service: request DTO · service → controller: response DTO · EF Core connects to the database container
+          </p>
+          <p class="architecture-note">
+            In C4, a container is a separately running/deployable application
+            or data store; components live inside an application container.
+            The Orders service uses EF Core directly; a separate DAO is not
+            required. Add one only if it provides a useful persistence
+            boundary. DTOs are data contracts passed between code elements,
+            not components. Keep module boundaries and data ownership explicit.
+            See the
+            <a
+              class="c4-reference"
+              href="https://c4model.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >C4 model</a>.
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">In summary</p>
+          <h2>Different roles, one application</h2>
+          <div class="definition">
+            <strong>DTO</strong> carries data across a boundary.
+            <strong>DAO</strong> provides a data-access boundary.
+            <strong>EF Core</strong> maps .NET objects to a database.
+            <strong>ACID</strong> describes transaction guarantees.
+            <strong>Relational</strong> and <strong>document</strong> databases
+            organize data differently.
+          </div>
+          <p class="example">
+            In a modular monolith, keep each module’s rules and persistence
+            ownership clear, use DTOs for deliberate communication, and choose a
+            database model that fits the data.
+          </p>
+        </section>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        slideNumber: "c/t",
+        transition: "fade",
+        transitionSpeed: "fast",
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.5,
+        maxScale: 1.5,
+      });
+    </script>
+  </body>
+</html>

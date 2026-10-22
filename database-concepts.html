@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A practical guide to ACID, ERDs, DTOs, DAOs, Entity Framework Core, and clean architecture.">
+    <title>Database concepts &amp; good architecture</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <style>
+      :root {
+        --bg: #10151f;
+        --panel: #192231;
+        --panel-light: #202c3d;
+        --ink: #f2f5fa;
+        --muted: #b3bfd0;
+        --cyan: #62dfdc;
+        --gold: #ffcf70;
+        --coral: #ff8f83;
+        --green: #9be0a4;
+      }
+
+      * { box-sizing: border-box; }
+      body { background: var(--bg); }
+      .reveal-viewport { background: var(--bg); }
+      .reveal {
+        color: var(--ink);
+        font-family: "Aptos", "Segoe UI", sans-serif;
+        font-size: 24px;
+      }
+      .reveal .slides { text-align: left; }
+      .reveal .slides section { padding: 16px 28px; }
+      .reveal h1, .reveal h2, .reveal h3 {
+        color: var(--ink);
+        font-family: inherit;
+        font-weight: 700;
+        letter-spacing: -0.035em;
+        text-transform: none;
+      }
+      .reveal h1 { font-size: 2.45em; line-height: 1.08; }
+      .reveal h2 { font-size: 1.62em; margin: 0 0 0.5em; }
+      .reveal h3 { font-size: 0.88em; margin: 0 0 0.35em; }
+      .reveal p { color: var(--muted); margin: 0.45em 0; }
+      .reveal ul { display: block; margin: 0.35em 0 0; }
+      .reveal li { color: var(--muted); margin: 0.32em 0; }
+      .reveal strong { color: var(--ink); }
+      .reveal a { color: var(--cyan); }
+      .reveal code {
+        color: var(--cyan);
+        font-family: Consolas, "Courier New", monospace;
+      }
+      .reveal pre {
+        width: 100%;
+        margin: 0.55em 0;
+        box-shadow: none;
+      }
+      .reveal pre code {
+        max-height: 400px;
+        padding: 1em;
+        border: 1px solid #334154;
+        border-radius: 12px;
+        background: #0b1018;
+        color: #e5edf8;
+        font-size: 0.66em;
+        line-height: 1.48;
+      }
+      .reveal .controls { color: var(--cyan); }
+      .reveal .progress { color: var(--cyan); height: 4px; }
+      .eyebrow {
+        color: var(--cyan) !important;
+        font-size: 0.55em;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        margin-bottom: 0.8em !important;
+        text-transform: uppercase;
+      }
+      .subtitle { font-size: 1.05em; max-width: 820px; }
+      .accent { color: var(--cyan); }
+      .gold { color: var(--gold) !important; }
+      .coral { color: var(--coral) !important; }
+      .green { color: var(--green) !important; }
+      .small { font-size: 0.68em; }
+      .muted { color: var(--muted) !important; }
+      .tag {
+        display: inline-block;
+        margin: 0.25em 0.25em 0 0;
+        padding: 0.25em 0.6em;
+        border: 1px solid #40516a;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 0.56em;
+      }
+      .grid-2, .grid-3, .grid-4 {
+        display: grid;
+        align-items: stretch;
+        gap: 16px;
+      }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .card {
+        padding: 18px 20px;
+        border: 1px solid #2e3b4f;
+        border-radius: 14px;
+        background: var(--panel);
+      }
+      .card p, .card li { font-size: 0.7em; }
+      .card ul { padding-left: 1.1em; }
+      .card h3 { color: var(--cyan); }
+      .callout {
+        margin-top: 0.65em;
+        padding: 13px 17px;
+        border-left: 4px solid var(--gold);
+        border-radius: 0 10px 10px 0;
+        background: #242a31;
+        color: var(--muted);
+        font-size: 0.7em;
+      }
+      .flow {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+        align-items: center;
+        gap: 10px;
+        margin: 0.8em 0;
+      }
+      .flow .node {
+        min-height: 76px;
+        display: grid;
+        place-content: center;
+        padding: 10px;
+        border: 1px solid #35455c;
+        border-radius: 12px;
+        background: var(--panel);
+        color: var(--ink);
+        font-size: 0.64em;
+        text-align: center;
+      }
+      .flow .arrow { color: var(--cyan); font-size: 1.15em; }
+      .entity {
+        overflow: hidden;
+        border: 1px solid #40516a;
+        border-radius: 12px;
+        background: var(--panel);
+      }
+      .entity h3 {
+        padding: 10px 14px;
+        margin: 0;
+        border-bottom: 1px solid #40516a;
+        background: var(--panel-light);
+      }
+      .entity p {
+        padding: 6px 14px;
+        margin: 0;
+        border-bottom: 1px solid #273447;
+        color: var(--muted);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.56em;
+      }
+      .entity p:last-child { border-bottom: 0; }
+      .erd {
+        display: grid;
+        grid-template-columns: 1fr 0.55fr 1fr;
+        align-items: center;
+        gap: 16px;
+        margin: 0.55em auto;
+      }
+      .relation {
+        color: var(--gold);
+        font-size: 0.65em;
+        text-align: center;
+      }
+      .relation b { display: block; font-size: 1.7em; }
+      .checks {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px 18px;
+        margin-top: 0.7em;
+      }
+      .check {
+        padding: 11px 14px;
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 0.67em;
+      }
+      .check b { color: var(--green); }
+      @media (max-width: 700px) {
+        .reveal { font-size: 19px; }
+        .grid-3, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="eyebrow">Data, persistence &amp; design</p>
+          <h1>Database concepts<br><span class="accent">that work together</span></h1>
+          <p class="subtitle">ACID, ERDs, DTOs and DAOs—understood through Entity Framework Core and good software architecture.</p>
+          <div style="margin-top: 1.1em">
+            <span class="tag">A practical guide</span>
+            <span class="tag">EF Core examples</span>
+            <span class="tag">Design for change</span>
+          </div>
+          <aside class="notes">Use the arrow keys to navigate. This deck distinguishes database concepts from application patterns, then shows how they fit together.</aside>
+        </section>
+
+        <section>
+          <p class="eyebrow">Start with the boundaries</p>
+          <h2>One feature, several responsibilities</h2>
+          <div class="flow">
+            <div class="node">HTTP / UI<br><span class="muted">request</span></div>
+            <span class="arrow">→</span>
+            <div class="node">Application<br><span class="muted">use case + DTO</span></div>
+            <span class="arrow">→</span>
+            <div class="node">Persistence<br><span class="muted">EF Core / DAO</span></div>
+            <span class="arrow">→</span>
+            <div class="node">Relational DB<br><span class="muted">tables + ACID</span></div>
+          </div>
+          <div class="grid-3">
+            <div class="card"><h3>Model</h3><p>An ERD describes entities, relationships, keys and constraints.</p></div>
+            <div class="card"><h3>Persist</h3><p>EF Core maps .NET objects to relational data and coordinates database work.</p></div>
+            <div class="card"><h3>Exchange</h3><p>DTOs shape data that crosses an application boundary; they are not database entities.</p></div>
+          </div>
+          <div class="callout">Good architecture keeps each responsibility clear—and makes the direction of dependencies intentional.</div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Data model</p>
+          <h2>ERD: a map of the data</h2>
+          <p>An Entity–Relationship Diagram makes the relational design visible before code and migrations lock in details.</p>
+          <div class="erd">
+            <div class="entity">
+              <h3>Customer</h3>
+              <p><span class="gold">PK</span> CustomerId</p>
+              <p>Name</p>
+              <p>Email <span class="muted">(unique)</span></p>
+            </div>
+            <div class="relation"><b>1 ───── 0..*</b>places</div>
+            <div class="entity">
+              <h3>Order</h3>
+              <p><span class="gold">PK</span> OrderId</p>
+              <p><span class="cyan">FK</span> CustomerId</p>
+              <p>PlacedAt, Status</p>
+            </div>
+          </div>
+          <div class="grid-3">
+            <div class="card"><h3>Keys</h3><p>Primary keys identify rows; foreign keys preserve references.</p></div>
+            <div class="card"><h3>Cardinality</h3><p>One customer can have many orders; each order belongs to one customer.</p></div>
+            <div class="card"><h3>Constraints</h3><p>Nullability, uniqueness and delete behavior are part of the model, not decoration.</p></div>
+          </div>
+          <div class="callout">The ERD describes the database design. EF Core entities and configuration implement that design in code.</div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Mapping with EF Core</p>
+          <h2>From model to relational schema</h2>
+          <div class="grid-2">
+            <div>
+              <pre><code class="language-csharp">public sealed class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public ICollection&lt;Order&gt; Orders { get; } =
+        new List&lt;Order&gt;();
+}
+
+public sealed class Order
+{
+    public int Id { get; set; }
+    public int CustomerId { get; set; }
+    public Customer Customer { get; set; } = null!;
+}</code></pre>
+            </div>
+            <div>
+              <div class="card">
+                <h3>EF Core connects the pieces</h3>
+                <ul>
+                  <li><code>DbContext</code> represents a unit of work and identity map.</li>
+                  <li><code>DbSet&lt;T&gt;</code> is an entry point for querying and tracking entity types.</li>
+                  <li>Conventions, data annotations or Fluent API configure relationships and constraints.</li>
+                  <li>Migrations capture schema changes; review and deploy them deliberately.</li>
+                </ul>
+              </div>
+              <div class="callout">A navigation property is an object-model convenience; the foreign key is what enforces the relationship in the relational database.</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Reliable transactions</p>
+          <h2>ACID: what a transaction promises</h2>
+          <div class="grid-2">
+            <div class="card"><h3 class="accent">Atomicity</h3><p>All operations in the transaction succeed together—or none do.</p></div>
+            <div class="card"><h3 class="gold">Consistency</h3><p>Committed work preserves database rules and constraints.</p></div>
+            <div class="card"><h3 class="coral">Isolation</h3><p>Concurrent transactions behave according to the chosen isolation level.</p></div>
+            <div class="card"><h3 class="green">Durability</h3><p>Once committed, data survives failures as guaranteed by the database.</p></div>
+          </div>
+          <div class="callout">ACID is a property of database transactions—not a feature that an ORM can guarantee on its own. Provider, configuration and transaction scope matter.</div>
+        </section>
+
+        <section>
+          <p class="eyebrow">EF Core in practice</p>
+          <h2>Save once; group work intentionally</h2>
+          <div class="grid-2">
+            <div>
+              <pre><code class="language-csharp">await using var tx =
+    await db.Database.BeginTransactionAsync(ct);
+
+try
+{
+    db.Orders.Add(order);
+    await db.SaveChangesAsync(ct);
+
+    db.OutboxMessages.Add(message);
+    await db.SaveChangesAsync(ct);
+
+    await tx.CommitAsync(ct);
+}
+catch
+{
+    await tx.RollbackAsync(ct);
+    throw;
+}</code></pre>
+            </div>
+            <div class="card">
+              <h3>Key distinctions</h3>
+              <ul>
+                <li>A single <code>SaveChanges</code> is transactional by default when the provider supports transactions.</li>
+                <li>Two <code>SaveChanges</code> calls are not automatically one atomic operation; use an explicit transaction when both must commit together.</li>
+                <li>Keep transactions short; do not hold them open across slow external calls.</li>
+                <li>Use constraints and concurrency controls for correctness under concurrent requests.</li>
+              </ul>
+              <p class="small">The example rethrows failures so callers can handle them; production code should also apply the app's logging and cancellation conventions.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Application boundary</p>
+          <h2>DTO: data shaped for a use</h2>
+          <div class="grid-2">
+            <div>
+              <pre><code class="language-csharp">public sealed record OrderSummaryDto(
+    int Id,
+    string CustomerName,
+    decimal Total);
+
+var results = await db.Orders
+    .Where(o =&gt; o.Status == OrderStatus.Paid)
+    .Select(o =&gt; new OrderSummaryDto(
+        o.Id,
+        o.Customer.Name,
+        o.Total))
+    .ToListAsync(ct);</code></pre>
+            </div>
+            <div>
+              <div class="card">
+                <h3>Why use a DTO?</h3>
+                <ul>
+                  <li>Expose only the fields a client needs.</li>
+                  <li>Decouple a public API contract from persistence details.</li>
+                  <li>Shape list/detail views and avoid serializing entity graphs.</li>
+                  <li>Validate incoming commands at the application boundary.</li>
+                </ul>
+              </div>
+              <div class="callout">Project to a DTO in the query when practical: the database can return just the needed columns. A DTO is not automatically a security boundary—authorize and validate explicitly.</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Persistence boundary</p>
+          <h2>DAO: data access, not business policy</h2>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Data Access Object</h3>
+              <p>A DAO encapsulates persistence operations for a data source: queries, inserts, updates and deletes.</p>
+              <ul>
+                <li>Hides storage-specific details from its caller.</li>
+                <li>Can be implemented using EF Core or another provider.</li>
+                <li>Should not become a home for unrelated business rules.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>EF Core already provides building blocks</h3>
+              <ul>
+                <li><code>DbContext</code> tracks changes and coordinates persistence.</li>
+                <li><code>DbSet&lt;T&gt;</code> supports common query and write operations.</li>
+                <li>Add a DAO/repository abstraction when it creates a meaningful boundary or behavior.</li>
+                <li>A wrapper that mirrors every EF method often adds indirection without value.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout"><strong>DAO vs. repository:</strong> terminology varies. A repository often expresses domain-oriented collection semantics; a DAO usually emphasizes data-source access. Neither pattern is mandatory just because an ORM is used.</div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Good software architecture</p>
+          <h2>Put dependencies in the right direction</h2>
+          <div class="flow">
+            <div class="node">API / UI<br><span class="muted">transport</span></div>
+            <span class="arrow">→</span>
+            <div class="node">Application<br><span class="muted">use cases + DTOs</span></div>
+            <span class="arrow">→</span>
+            <div class="node">Domain<br><span class="muted">rules + concepts</span></div>
+            <span class="arrow">←</span>
+            <div class="node">Infrastructure<br><span class="muted">EF Core + DB</span></div>
+          </div>
+          <div class="grid-3">
+            <div class="card"><h3>Keep domain focused</h3><p>Business rules should not depend on HTTP, SQL or EF Core implementation details.</p></div>
+            <div class="card"><h3>Depend on abstractions where useful</h3><p>Define ports at the inner boundary; let infrastructure implement them when replaceability or testing warrants it.</p></div>
+            <div class="card"><h3>Choose boundaries pragmatically</h3><p>Start simple. Introduce an abstraction to solve a real coupling, testing or domain-model need.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="eyebrow">Putting it together</p>
+          <h2>Follow one request through the system</h2>
+          <div class="flow">
+            <div class="node">Request<br><span class="muted">CreateOrderDto</span></div>
+            <span class="arrow">→</span>
+            <div class="node">Use case<br><span class="muted">validate + apply rules</span></div>
+            <span class="arrow">→</span>
+            <div class="node">EF Core<br><span class="muted">track + SaveChanges</span></div>
+            <span class="arrow">→</span>
+            <div class="node">Database<br><span class="muted">constraints + ACID</span></div>
+          </div>
+          <ul>
+            <li>The ERD informs tables, keys, relationships and constraints.</li>
+            <li>The use case decides what the operation means and when work must be atomic.</li>
+            <li>EF Core translates the persistence work; a DAO or repository is optional, based on need.</li>
+            <li>A response DTO exposes a deliberate, stable view—not the tracked entity graph.</li>
+          </ul>
+        </section>
+
+        <section>
+          <p class="eyebrow">Takeaways</p>
+          <h2>Use the right tool for the right boundary</h2>
+          <div class="checks">
+            <div class="check"><b>ACID</b> — reason about transaction scope and database guarantees.</div>
+            <div class="check"><b>ERD</b> — make relationships and constraints explicit.</div>
+            <div class="check"><b>DTO</b> — shape and protect boundary contracts.</div>
+            <div class="check"><b>DAO</b> — isolate data access when that boundary has value.</div>
+            <div class="check"><b>EF Core</b> — leverage its change tracking, queries and unit of work.</div>
+            <div class="check"><b>Architecture</b> — keep business intent clear and dependencies deliberate.</div>
+          </div>
+          <p style="margin-top: 1em">Good design is less about adding patterns and more about making responsibilities explicit.</p>
+          <p class="small">Use ← / → to navigate · Press <code>F</code> for fullscreen · Press <code>S</code> for speaker notes</p>
+        </section>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        slideNumber: "c/t",
+        transition: "fade",
+        transitionSpeed: "fast",
+        width: 1280,
+        height: 720,
+        margin: 0.06,
+        minScale: 0.5,
+        maxScale: 1.5
+      });
+    </script>
+  </body>
+</html>
