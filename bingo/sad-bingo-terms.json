@@ -1,0 +1,127 @@
+[
+    {
+        "title": "MongoDB",
+        "description": "A document-oriented NoSQL database that stores data in flexible, JSON-like BSON documents, offering high scalability and flexible schemas.",
+        "link": "https://www.mongodb.com/docs/manual/introduction/"
+    },
+    {
+        "title": "Service",
+        "description": "A layer or component that encapsulates business logic and workflow rules, mediating operations between controllers and data access.",
+        "link": "https://martinfowler.com/eaaCatalog/serviceLayer.html"
+    },
+    {
+        "title": "Testing",
+        "description": "The practice of verifying and validating that software functions correctly, satisfies requirements, and prevents regressions.",
+        "link": "https://martinfowler.com/testing/"
+    },
+    {
+        "title": "Test Driven Development",
+        "description": "A development practice where automated tests are written before the code itself, following a rapid Red-Green-Refactor cycle.",
+        "link": "https://martinfowler.com/bliki/TestDrivenDevelopment.html"
+    },
+    {
+        "title": "Services",
+        "description": "Independent, loosely coupled software units or subsystems providing distinct capabilities across a network or distributed system.",
+        "link": "https://martinfowler.com/articles/microservices.html"
+    },
+    {
+        "title": "Controllers",
+        "description": "Components in MVC architectures that handle incoming HTTP requests, coordinate business logic, and select responses to return.",
+        "link": "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller"
+    },
+    {
+        "title": "Monolith",
+        "description": "An architectural pattern where all business logic, data access, and user interfaces are packaged and deployed as a single unit.",
+        "link": "https://martinfowler.com/bliki/MonolithFirst.html"
+    },
+    {
+        "title": "API",
+        "description": "Application Programming Interface: A contract defining how software components interact and exchange structured data.",
+        "link": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Client-side_APIs/Introduction"
+    },
+    {
+        "title": "HTTP Endpoints",
+        "description": "Target URLs or routes exposed by an application or web API where clients send requests (GET, POST, etc.) to perform operations.",
+        "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+    },
+    {
+        "title": "Microservices",
+        "description": "An architectural approach structuring an application as a suite of small, independently deployable services around business domains.",
+        "link": "https://martinfowler.com/articles/microservices.html"
+    },
+    {
+        "title": "Modules",
+        "description": "Self-contained units of code with distinct boundaries and public interfaces that help organize and decouple large systems.",
+        "link": "https://en.wikipedia.org/wiki/Modular_programming"
+    },
+    {
+        "title": "Role Based Authentication",
+        "description": "A security mechanism (RBAC) controlling user access to resources and operations based on assigned system roles and privileges.",
+        "link": "https://csrc.nist.gov/projects/role-based-access-control"
+    },
+    {
+        "title": "OWASP",
+        "description": "Open Worldwide Application Security Project: A community dedicated to providing guidelines and tools to secure web applications.",
+        "link": "https://owasp.org/www-project-top-ten/"
+    },
+    {
+        "title": "Accessibility",
+        "description": "Designing and developing software usable by everyone, including people relying on assistive technologies (a11y).",
+        "link": "https://www.w3.org/WAI/fundamentals/accessibility-intro/"
+    },
+    {
+        "title": "DRY",
+        "description": "Don't Repeat Yourself: A software principle stating that every piece of knowledge must have a single, unambiguous representation.",
+        "link": "https://en.wikipedia.org/wiki/Don%27t_repeat_yourself"
+    },
+    {
+        "title": "Views",
+        "description": "The presentation layer in MVC that renders models and user interface elements for display to the end user.",
+        "link": "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller"
+    },
+    {
+        "title": "Models",
+        "description": "The component in MVC that manages application state, data structures, and core domain business rules.",
+        "link": "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller"
+    },
+    {
+        "title": "MVC",
+        "description": "Model-View-Controller: A foundational architectural pattern separating data representation, user interface, and input handling.",
+        "link": "https://developer.mozilla.org/en-US/docs/Glossary/MVC"
+    },
+    {
+        "title": "Ubiquitous Language",
+        "description": "A core Domain-Driven Design concept establishing a common, rigorous language shared by developers and domain experts in code and speech.",
+        "link": "https://martinfowler.com/bliki/UbiquitousLanguage.html"
+    },
+    {
+        "title": "MVCS",
+        "description": "Model-View-Controller-Service: An evolution of MVC introducing a dedicated Service layer to keep business logic out of controllers.",
+        "link": "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller"
+    },
+    {
+        "title": "Persistence",
+        "description": "The mechanism allowing application data to outlive the process that created it, typically through databases or file storage.",
+        "link": "https://en.wikipedia.org/wiki/Persistence_(computer_science)"
+    },
+    {
+        "title": "Components",
+        "description": "Reusable, modular software elements encapsulating specific behavior and state, communicating through established interfaces.",
+        "link": "https://martinfowler.com/bliki/Component.html"
+    },
+    {
+        "title": "Boundaries",
+        "description": "Architectural divisions between subsystems, modules, or layers that protect domain rules from infrastructure and external concerns.",
+        "link": "https://martinfowler.com/bliki/BoundedContext.html"
+    },
+    {
+        "title": "Martin Fowler",
+        "description": "Renowned software author and Chief Scientist at ThoughtWorks, famous for pioneering works on refactoring, patterns, and architecture.",
+        "link": "https://martinfowler.com/aboutMe.html"
+    },
+    {
+        "title": "Uncle Bob",
+        "description": "Robert C. Martin: Celebrated software craftsman and author who popularized the SOLID principles, Clean Architecture, and Clean Code.",
+        "link": "https://en.wikipedia.org/wiki/Robert_C._Martin"
+    }
+]

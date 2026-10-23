@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Software Engineering Bingo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .bingo-container {
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-width: 520px;
+        }
+
+        .cell {
+            background: white;
+            border: 3px solid #546e7a;
+            padding: 20px 10px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            font-weight: bold;
+            user-select: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .info-btn {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            background: #1e88e5;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-btn:hover,
+        .info-btn:focus-visible {
+            background: #0d47a1;
+            outline: none;
+        }
+        }
+
+        .cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+        }
+
+        .cell:focus-visible {
+            outline: 3px solid #1e88e5;
+            outline-offset: 2px;
+        }
+
+        outline: none;
+        }
+
+        .cell:focus {
+            box-shadow: 0 0 0 3px #90caf9;
+        }
+
+        .cell.ticked::after {
+            content: "✔";
+            color: #2e7d32;
+            font-size: 48px;
+            position: absolute;
+            opacity: 0.35;
+        }
+
+        .cell.ticked {
+            border-color: #2e7d32;
+            background: #e8f5e9;
+        }
+        }
+
+        .info-btn {
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            font-size: 14px;
+            background: #eee;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .info-btn:focus {
+            outline: 2px solid #1a73e8;
+        }
+
+        dialog {
+            max-width: 420px;
+            border: none;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        dialog h2 {
+            margin-top: 0;
+            color: #0d47a1;
+        }
+
+        dialog a {
+            color: #0d47a1;
+            font-weight: bold;
+        }
+
+        dialog button {
+            margin-top: 16px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            background: #0d47a1;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        dialog {
+            border: none;
+            border-radius: 16px;
+            padding: 20px 24px;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            font-family: inherit;
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        dialog h2 {
+            margin-top: 0;
+            color: #1e88e5;
+        }
+
+        dialog p {
+            line-height: 1.5;
+        }
+
+        dialog a {
+            color: #1e88e5;
+            font-weight: bold;
+        }
+
+        dialog button {
+            margin-top: 16px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            background: #1e88e5;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        dialog button:hover {
+            background: #1565c0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bingo-container">
+        <h1>Software Engineering Bingo</h1>
+
+        <div class="bingo-grid" id="bingoGrid"></div>
+    </div>
+    </div>
+
+    <dialog id="infoDialog" aria-labelledby="dialogTitle">
+        <h2 id="dialogTitle"></h2>
+        <p id="dialogText"></p>
+        <p id="dialogLinks"></p>
+        <button id="closeDialog">Close</button>
+    </dialog>
+
+    <script>
+        const bingoDataUrl = 'psp-bingo-terms.json';
+
+        fetch(bingoDataUrl)
+            .then(res => res.json())
+            .then(data => buildGrid(data));
+
+        function buildGrid(terms) {
+            const grid = document.getElementById('bingoGrid');
+
+            terms.forEach(term => {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.tabIndex = 0;
+                cell.textContent = term.title;
+
+                const infoBtn = document.createElement('button');
+                infoBtn.className = 'info-btn';
+                infoBtn.type = 'button';
+                infoBtn.textContent = 'i';
+                infoBtn.setAttribute('aria-label', `More information about ${term.title}`);
+
+                const dialog = document.createElement('dialog');
+                dialog.innerHTML = `
+        <h2>${term.title}</h2>
+        <p>${term.description}</p>
+        ${term.link ? `<p><a href="${term.link}" target="_blank">Learn more</a></p>` : ''}
+        <button>Close</button>
+      `;
+
+                infoBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    dialog.showModal();
+                });
+
+                infoBtn.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        dialog.showModal();
+                    }
+                });
+
+                dialog.querySelector('button').addEventListener('click', () => dialog.close());
+
+                cell.addEventListener('click', () => cell.classList.toggle('ticked'));
+                cell.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        cell.classList.toggle('ticked');
+                    }
+                });
+
+                cell.appendChild(infoBtn);
+                document.body.appendChild(dialog);
+                grid.appendChild(cell);
+            });
+        }
+    </script>
+</body>
+
+</html>

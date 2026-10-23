@@ -1,0 +1,127 @@
+[
+    {
+        "title": "Backlog",
+        "description": "An ordered list of work items that the team may deliver, continuously refined and prioritised.",
+        "link": "https://www.scrum.org/resources/what-is-a-product-backlog"
+    },
+    {
+        "title": "Scrum",
+        "description": "A lightweight framework that helps teams deliver value iteratively through defined roles, events, and artefacts.",
+        "link": "https://www.scrumguides.org/scrum-guide.html"
+    },
+    {
+        "title": "Three Amigos",
+        "description": "A collaboration practice where business, development, and testing perspectives align on shared understanding before work begins.",
+        "link": "https://www.agilealliance.org/glossary/three-amigos/"
+    },
+    {
+        "title": "Stand-up",
+        "description": "A short daily meeting where the team synchronises work and identifies blockers.",
+        "link": "https://www.atlassian.com/agile/scrum/standups"
+    },
+    {
+        "title": "Retrospective",
+        "description": "A regular team reflection to inspect what went well, what didn’t, and how to improve.",
+        "link": "https://www.scrum.org/resources/what-is-a-sprint-retrospective"
+    },
+    {
+        "title": "User Story",
+        "description": "A short description of a feature from the user’s perspective, focusing on value rather than implementation.",
+        "link": "https://www.agilealliance.org/glossary/user-story/"
+    },
+    {
+        "title": "MoSCoW",
+        "description": "A prioritisation technique that classifies requirements as Must, Should, Could, or Won’t have.",
+        "link": "https://www.productplan.com/glossary/moscow-prioritization/"
+    },
+    {
+        "title": "Kanban",
+        "description": "A visual workflow method that helps teams manage and limit work in progress.",
+        "link": "https://www.atlassian.com/agile/kanban"
+    },
+    {
+        "title": "Epic",
+        "description": "A large body of work that can be broken down into smaller user stories.",
+        "link": "https://www.agilealliance.org/glossary/epic/"
+    },
+    {
+        "title": "BA",
+        "description": "A Business Analyst helps identify needs, define requirements, and bridge business and technical teams.",
+        "link": "https://www.iiba.org/about-iiba/what-is-business-analysis/"
+    },
+    {
+        "title": "QA",
+        "description": "Quality Assurance focuses on preventing defects and ensuring the product meets agreed standards.",
+        "link": "https://www.atlassian.com/continuous-delivery/software-testing/qa-vs-testing"
+    },
+    {
+        "title": "MVP",
+        "description": "The Minimum Viable Product is the smallest version of a product that delivers value and enables learning.",
+        "link": "https://www.productplan.com/glossary/minimum-viable-product/"
+    },
+    {
+        "title": "CI/CD",
+        "description": "Practices that automate building, testing, and deploying software to improve reliability and speed.",
+        "link": "https://www.redhat.com/en/topics/devops/what-is-ci-cd"
+    },
+    {
+        "title": "Code Review",
+        "description": "A practice where developers review each other’s code to improve quality and share knowledge.",
+        "link": "https://martinfowler.com/articles/code-review.html"
+    },
+    {
+        "title": "Unit Testing",
+        "description": "Testing individual units of code to ensure they behave as expected in isolation.",
+        "link": "https://martinfowler.com/bliki/UnitTest.html"
+    },
+    {
+        "title": "Refactoring",
+        "description": "Improving the internal structure of code without changing its external behaviour.",
+        "link": "https://martinfowler.com/bliki/Refactoring.html"
+    },
+    {
+        "title": "Client Communication",
+        "description": "Ongoing communication with clients to clarify needs, manage expectations, and build trust.",
+        "link": "https://www.agilealliance.org/glossary/customer-collaboration/"
+    },
+    {
+        "title": "User Acceptance Testing",
+        "description": "Testing performed by users or stakeholders to confirm the system meets business needs.",
+        "link": "https://www.atlassian.com/software-testing/user-acceptance-testing"
+    },
+    {
+        "title": "Pair Programming",
+        "description": "Two developers working together at one workstation, sharing ideas and responsibility.",
+        "link": "https://martinfowler.com/articles/on-pair-programming.html"
+    },
+    {
+        "title": "Agile",
+        "description": "An approach to software development that values collaboration, feedback, and incremental delivery.",
+        "link": "https://www.agilealliance.org/agile101/"
+    },
+    {
+        "title": "User Feedback",
+        "description": "Information gathered from users to guide improvements and validate assumptions.",
+        "link": "https://www.nngroup.com/articles/user-feedback/"
+    },
+    {
+        "title": "Story Points",
+        "description": "A relative measure used by teams to estimate effort and complexity of work items.",
+        "link": "https://www.atlassian.com/agile/scrum/story-points"
+    },
+    {
+        "title": "Project Specification",
+        "description": "A document describing requirements, constraints, and expectations for a project.",
+        "link": "https://www.tutorialspoint.com/software_engineering/software_requirements_specification.htm"
+    },
+    {
+        "title": "Deployment",
+        "description": "The process of releasing software so it is available for use.",
+        "link": "https://www.redhat.com/en/topics/devops/what-is-deployment"
+    },
+    {
+        "title": "Stakeholder",
+        "description": "Anyone with an interest in or influence over the product, process, or outcome.",
+        "link": "https://www.productplan.com/glossary/stakeholder/"
+    }
+]
