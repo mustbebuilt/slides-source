@@ -1,4 +1,4 @@
-# Divide and Conquer: Merge Sort, Quick Sort, and Binary Sort
+# Divide and Conquer: Merge Sort, Quick Sort, and Binary Search
 
 The **Divide and Conquer (D&C)** paradigm is one of the foundational algorithm design techniques in computer science. Instead of tackling a complex problem all at once, D&C breaks it down recursively into smaller, more manageable subproblems of the same type.
 
@@ -30,15 +30,16 @@ A divide and conquer algorithm operates in three distinct phases:
 
 ### Why D&C is Powerful
 
-Naive comparison-based sorting algorithms (such as Bubble Sort, Selection Sort, and standard Insertion Sort) make element-by-element comparisons, scaling quadratically at **$O(n^2)$**.
+Dividing a problem size by a constant factor (commonly $2$) fundamentally alters computational efficiency:
 
-By dividing an array of size $n$ into halves, the problem depth shrinks logarithmically to $\log_2 n$ levels. When each level requires at most linear work ($O(n)$) to divide or combine, the total running time drops dramatically to **$O(n \log n)$**.
+- **When solving both halves** (e.g., Merge Sort and Quick Sort): The recursion tree has $\log_2 n$ levels with $O(n)$ work per level, shrinking $O(n^2)$ sorting down to **$O(n \log n)$**.
+- **When discarding one half** (e.g., Binary Search): Only a single subproblem is solved per level with $O(1)$ work, shrinking linear search $O(n)$ down to **$O(\log n)$**.
 
-| Input Size ($n$) | $O(n^2)$ Operations | $O(n \log_2 n)$ Operations | Speedup Factor |
-| --- | --- | --- | --- |
-| $1,000$ | $1,000,000$ | $\approx 10,000$ | $\approx 100\times$ faster |
-| $100,000$ | $10,000,000,000$ | $\approx 1,700,000$ | $\approx 5,800\times$ faster |
-| $1,000,000$ | $1,000,000,000,000$ | $\approx 20,000,000$ | $\approx 50,000\times$ faster |
+| Input Size ($n$) | Linear Search ($O(n)$) | Binary Search ($O(\log_2 n)$) | Naive Sort ($O(n^2)$) | D&C Sort ($O(n \log_2 n)$) |
+| --- | --- | --- | --- | --- |
+| $1,000$ | $1,000$ ops | $\approx 10$ ops | $1,000,000$ ops | $\approx 10,000$ ops |
+| $100,000$ | $100,000$ ops | $\approx 17$ ops | $10,000,000,000$ ops | $\approx 1,700,000$ ops |
+| $1,000,000$ | $1,000,000$ ops | $\approx 20$ ops | $1,000,000,000,000$ ops | $\approx 20,000,000$ ops |
 
 ---
 
@@ -278,160 +279,234 @@ The performance of Quick Sort depends heavily on choosing a balanced pivot:
 
 ---
 
-## 3. Binary Sort (Binary Insertion Sort)
+## 3. Binary Search
 
-The term **Binary Sort** most commonly refers to **Binary Insertion Sort** — an enhancement of Insertion Sort that uses the divide and conquer principle of **Binary Search** to find where each item belongs.
+While Merge Sort and Quick Sort divide a problem to sort an entire collection in $O(n \log n)$ time, **Binary Search** is the quintessential algorithm for searching an already sorted collection in **$O(\log n)$** time.
 
-> **Clarifying Note:**
-> In computer science literature:
-> - **Binary Insertion Sort** is Insertion Sort where binary search (a divide and conquer search) replaces linear scanning to locate insertion points.
-> - **Binary Search** is the fundamental divide-and-conquer algorithm that halves the search space at each step ($T(n) = T(n/2) + O(1)$).
-> - It should not be confused with *Binary Tree Sort* (inserting into a BST and traversing in-order) or *Binary Radix Sort* (bucket sorting based on binary bit representations).
+### How Binary Search Applies Divide and Conquer
 
-### How Binary Insertion Sort Applies Divide and Conquer
+Binary Search operates on a pre-sorted array with direct random access:
 
-Standard Insertion Sort maintains a sorted prefix of elements at the beginning of the array. For each new element:
-1. Standard Insertion Sort scans backwards linearly ($O(k)$ comparisons for prefix length $k$).
-2. **Binary Sort uses Divide and Conquer (Binary Search)** on the sorted prefix:
-   - **Divide**: Find the midpoint `mid` of the sorted prefix $[0 \dots i-1]$.
-   - **Conquer**: Compare the current element to `array[mid]`. Halve the search window to the left if smaller, or to the right if larger.
-   - **Combine**: Once the exact insertion index is found after $\lceil \log_2 i \rceil$ comparisons, shift existing elements rightward by 1 position and place the new element.
+- **Divide**: Find the middle index of the current search interval:
+  $$\text{mid} = \text{low} + \frac{\text{high} - \text{low}}{2}$$
+  Compare the target search key against `array[mid]`.
+  Cost: **$O(1)$**.
+- **Conquer**:
+  - If `array[mid] == key`: Target found; return `mid` directly.
+  - If `key < array[mid]`: Eliminate the right half and recursively/iteratively search the left subarray ($\text{low} \dots \text{mid} - 1$).
+  - If `key > array[mid]`: Eliminate the left half and recursively/iteratively search the right subarray ($\text{mid} + 1 \dots \text{high}$).
+  - Base case: If $\text{low} > \text{high}$, the target key is not in the array.
+- **Combine**: **$O(1)$** (Trivial). The result returned from the single active subproblem is immediately returned as the final result for the entire search. No combining of multiple results is required.
+
+### D&C Taxonomy: Divide & Conquer vs. Decrease & Conquer
+
+In computer science literature (e.g., Levitin, CLRS), Binary Search is often classified as a **Decrease and Conquer (by a constant factor of 2)** algorithm because:
+- **Standard D&C** (e.g., Merge Sort): Divides the problem into $a = 2$ subproblems and solves **both**:
+  $$T(n) = 2T(n/2) + O(n) \implies O(n \log n)$$
+- **Binary Search**: Divides the problem into $2$ subproblems, but discards one entirely and solves **only $a = 1$ subproblem**:
+  $$T(n) = 1T(n/2) + O(1) \implies O(\log_2 n)$$
+
+Every step cuts the search space exactly in half, discarding 50% of the remaining items with a single comparison.
+
+---
+
+### Step-by-Step Execution Trace
+
+Searching for target value **`42`** in a sorted array of 10 elements:
+`[ 3, 8, 15, 24, 33, 42, 57, 68, 79, 91 ]`
 
 ```
-Sorted Prefix: [ 10,  20,  40,  50,  70 ]     Element to insert: [ 35 ]
-                 ^          ^          ^
-                low        mid        high
+Iteration 1:
+Array:  [ 3,  8, 15, 24, 33, 42, 57, 68, 79, 91 ]
+Indices:  0   1   2   3   4   5   6   7   8   9
+          ^               ^                   ^
+         low=0          mid=4               high=9
 
-Step 1: Compare 35 with 40 (mid) -> 35 < 40: Search Left Half [10, 20]
-Step 2: Compare 35 with 10 (mid) -> 35 > 10: Search Right Half [20]
-Step 3: Compare 35 with 20 (mid) -> 35 > 20: Insertion index is 2!
+Compare array[mid=4] (33) with target (42):
+42 > 33  --> Target must be in the right half!
+Discard left half [0..4]. New search range: low = mid + 1 = 5.
 
-Shift elements right:  [ 10,  20,  --,  40,  50,  70 ]
-Insert 35:             [ 10,  20,  35,  40,  50,  70 ]
+Iteration 2:
+Array:  [ --, --, --, --, --, 42, 57, 68, 79, 91 ]
+Indices:                       5   6   7   8   9
+                               ^       ^       ^
+                              low=5  mid=7   high=9
+
+Compare array[mid=7] (68) with target (42):
+42 < 68  --> Target must be in the left half!
+Discard right half [7..9]. New search range: high = mid - 1 = 6.
+
+Iteration 3:
+Array:  [ --, --, --, --, --, 42, 57, --, --, -- ]
+Indices:                       5   6
+                               ^
+                             low=5, mid=5 (high=6)
+
+Compare array[mid=5] (42) with target (42):
+42 == 42 --> Match found! Return index 5.
 ```
 
-### C# Implementation
+---
+
+### C# Implementation (Iterative & Recursive)
 
 ```csharp
-public static class BinaryInsertionSortAlgorithm
+public static class BinarySearchAlgorithm
 {
-    public static void Sort(int[] array)
+    /// <summary>
+    /// Classic iterative Binary Search. O(log n) time, O(1) auxiliary space.
+    /// Returns the zero-based index of target, or -1 if not found.
+    /// </summary>
+    public static int SearchIterative(int[] array, int target)
     {
-        if (array == null || array.Length <= 1) return;
+        if (array == null || array.Length == 0) return -1;
 
-        for (int i = 1; i < array.Length; i++)
-        {
-            int key = array[i];
+        int low = 0;
+        int high = array.Length - 1;
 
-            // 1. Use Divide & Conquer (Binary Search) to find insertion position
-            // in the sorted sub-array array[0 ... i-1]
-            int insertIndex = BinarySearchPosition(array, key, 0, i - 1);
-
-            // 2. Shift elements to make space for key
-            for (int j = i - 1; j >= insertIndex; j--)
-            {
-                array[j + 1] = array[j];
-            }
-
-            // 3. Place key into target slot
-            array[insertIndex] = key;
-        }
-    }
-
-    private static int BinarySearchPosition(int[] array, int key, int low, int high)
-    {
         while (low <= high)
         {
-            // Divide: calculate midpoint
+            // Safeguard against integer overflow: low + (high - low) / 2
+            // instead of (low + high) / 2
             int mid = low + (high - low) / 2;
 
-            if (key >= array[mid])
+            if (array[mid] == target)
             {
-                // Conquer: search right half
+                return mid; // Found target!
+            }
+            else if (array[mid] < target)
+            {
+                // Discard left half; search right
                 low = mid + 1;
             }
             else
             {
-                // Conquer: search left half
+                // Discard right half; search left
                 high = mid - 1;
             }
         }
 
-        // 'low' points to the correct insertion spot
-        return low;
+        return -1; // Target not present
+    }
+
+    /// <summary>
+    /// Classic recursive Divide and Conquer Binary Search.
+    /// O(log n) time, O(log n) call stack space.
+    /// </summary>
+    public static int SearchRecursive(int[] array, int target, int low, int high)
+    {
+        // Base case: search interval exhausted
+        if (low > high) return -1;
+
+        // 1. Divide: calculate midpoint
+        int mid = low + (high - low) / 2;
+
+        // 2. Conquer: solve the single relevant subproblem
+        if (array[mid] == target)
+        {
+            return mid; // Base case: element found
+        }
+        else if (array[mid] < target)
+        {
+            return SearchRecursive(array, target, mid + 1, high);
+        }
+        else
+        {
+            return SearchRecursive(array, target, low, mid - 1);
+        }
+
+        // 3. Combine: O(1) (the return value is passed up the stack unchanged)
     }
 }
 ```
 
+> **The Classic Midpoint Bug:**
+> In early implementations of binary search (including Java's standard library prior to 2006), midpoint was calculated as `(low + high) / 2`.
+> If `low + high` exceeds `int.MaxValue` ($2^{31}-1 = 2,147,483,647$), it wraps around into a negative number, causing an `IndexOutOfRangeException`.
+> Using `low + (high - low) / 2` mathematically prevents integer overflow.
+
+---
+
 ### Complexity & Characteristics
 
-- **Comparison Cost**: **$O(n \log n)$**. Across all $n$ items, binary search takes $\sum_{i=1}^n \log_2 i = O(n \log n)$ comparisons. This is a dramatic improvement over regular Insertion Sort's $O(n^2)$ comparisons.
-- **Data Movement Cost (Shifting)**: **$O(n^2)$**. Even though the insertion location is identified in $O(\log n)$ time, moving elements in a contiguous array still requires shifting up to $i$ elements per insertion ($O(n)$ per step, $O(n^2)$ overall).
 - **Time Complexity**:
-  - **Best Case**: $O(n \log n)$ comparisons, $O(1)$ shifts (when array is already sorted).
-  - **Average Case**: $O(n^2)$ overall time.
-  - **Worst Case**: $O(n^2)$ overall time (e.g., reversed array).
-- **Space Complexity**: **$O(1)$** auxiliary space (strictly in-place).
-- **Stability**: **Stable** (when using `key >= array[mid]` to preserve the relative order of duplicate values).
+  - **Best Case**: **$O(1)$** (The target element is located at the very first midpoint inspected).
+  - **Average Case**: **$O(\log_2 n)$** ($\approx \log_2 n - 1$ comparisons on average for successful searches).
+  - **Worst Case**: **$O(\log_2 n)$** (When the element is at the very ends of the search intervals, or not present in the array).
+  - *Recurrence relation*: $T(n) = T(n/2) + O(1)$. By Case 2 of the Master Theorem ($a=1, b=2, f(n)=O(1)$), $T(n) = \Theta(\log n)$.
+- **Space Complexity**:
+  - **Iterative**: **$O(1)$** auxiliary space (strictly constant pointers `low`, `high`, `mid`).
+  - **Recursive**: **$O(\log_2 n)$** stack space for recursive calls.
+- **Prerequisites & Constraints**:
+  - **Pre-sorted**: The underlying data must be sorted beforehand according to the comparison predicate.
+  - **Random Access**: Requires $O(1)$ indexing. On linked lists, finding the midpoint takes $O(k)$ pointer hops, destroying the logarithmic advantage and degrading to $O(n)$ linear search.
 - **Best Used When**:
-  - Comparing items is computationally expensive (e.g., comparing large text strings, complex database objects, or remote records), but memory shifting is cheap.
-  - The dataset is small (e.g., $n \le 32$–$64$). Many hybrid production algorithms like **Timsort** (used in Java, Python, and V8) switch to Binary Insertion Sort for small partitions!
+  - Searching repeatedly in static or infrequently updated collections.
+  - Performing range lookups (e.g., lower bound, upper bound, nearest element).
+  - Finding the root or boundary in monotonic mathematical functions ("Binary Search on Answer").
 
 ---
 
-## Direct Comparison
+## Direct Comparison: Merge Sort vs. Quick Sort vs. Binary Search
 
-| Feature | Merge Sort | Quick Sort | Binary (Insertion) Sort |
+| Feature | Merge Sort | Quick Sort | Binary Search |
 | --- | --- | --- | --- |
-| **D&C Nature** | Heavy Combine, trivial Divide | Heavy Divide, trivial Combine | D&C search for insertion point |
-| **Divide Step** | $O(1)$ (split at midpoint) | $O(n)$ (partition around pivot) | $O(\log k)$ (halve search range) |
-| **Combine Step** | $O(n)$ (merge two halves) | $O(1)$ (already in-place) | $O(k)$ (shift array elements) |
-| **Best Time** | $O(n \log n)$ | $O(n \log n)$ | $O(n)$ to $O(n \log n)$* |
-| **Average Time** | $O(n \log n)$ | $O(n \log n)$ | $O(n^2)$ |
-| **Worst Time** | $O(n \log n)$ | $O(n^2)$ | $O(n^2)$ |
-| **Worst-Case Trigger** | None (always $O(n \log n)$) | Sorted/reverse input with poor pivot | Reverse sorted input |
-| **Comparisons** | $O(n \log n)$ | $O(n \log n)$ avg | $O(n \log n)$ |
-| **Auxiliary Space** | $O(n)$ auxiliary array | $O(\log n)$ recursion stack | $O(1)$ (in-place) |
-| **Stable?** | **Yes** | **No** (standard partition) | **Yes** |
-| **In-Place?** | **No** (requires temp memory) | **Yes** | **Yes** |
-| **Cache Locality** | Moderate | Excellent | High for small arrays |
-
-`*` In Binary Insertion Sort, if a check is made against the last element first, already sorted inputs can skip binary search and achieve $O(n)$ time.
-
----
-
-## Architectural D&C Duality: Merge Sort vs. Quick Sort
-
-A useful way to contrast Merge Sort and Quick Sort is their complementary division of responsibility:
-
-```
-+-------------------------------------------------------------------------+
-|                              MERGE SORT                                 |
-|  Divide: Trivial O(1)    ----------------->   Combine: Heavy O(n)       |
-|  (Just split at middle index)                 (Merge two sorted arrays) |
-+-------------------------------------------------------------------------+
-
-+-------------------------------------------------------------------------+
-|                              QUICK SORT                                 |
-|  Divide: Heavy O(n)      ----------------->   Combine: Trivial O(1)     |
-|  (Partition around pivot)                     (Array already in place)  |
-+-------------------------------------------------------------------------+
-```
+| **Primary Goal** | Sort collection | Sort collection | Search for item in sorted collection |
+| **D&C Classification** | Divide & Conquer (2 branches) | Divide & Conquer (2 branches) | Decrease & Conquer (1 branch) |
+| **Recurrence Relation** | $T(n) = 2T(n/2) + O(n)$ | $T(n) = 2T(n/2) + O(n)$ (avg) | $T(n) = T(n/2) + O(1)$ |
+| **Divide Step** | $O(1)$ (split at midpoint) | $O(n)$ (partition around pivot) | $O(1)$ (calculate midpoint) |
+| **Active Subproblems** | 2 subproblems (both halves) | 2 subproblems (both sides of pivot) | 1 subproblem (only the relevant half) |
+| **Combine Step** | $O(n)$ (merge two sorted halves) | $O(1)$ (already in-place) | $O(1)$ (return index directly) |
+| **Best Time** | $O(n \log n)$ | $O(n \log n)$ | $O(1)$ (item at initial mid) |
+| **Average Time** | $O(n \log n)$ | $O(n \log n)$ | $O(\log n)$ |
+| **Worst Time** | $O(n \log n)$ | $O(n^2)$ | $O(\log n)$ |
+| **Auxiliary Space** | $O(n)$ auxiliary array | $O(\log n)$ recursion stack | $O(1)$ iterative ($O(\log n)$ recursive) |
+| **Pre-Condition** | None (unsorted data) | None (unsorted data) | **Requires pre-sorted collection** |
+| **Data Structure** | Arrays or Linked Lists | Contiguous arrays (cache friendly) | Contiguous arrays (random access) |
+| **Stable?** | **Yes** | **No** | N/A (Search operation) |
 
 ---
 
-## Practical Decision Guide: Which One to Choose?
+## Architectural D&C Comparison
+
+A side-by-side comparison reveals the elegance of dividing problem spaces:
+
+```
++-------------------------------------------------------------------------------+
+|                                  MERGE SORT                                   |
+|  Divide: Trivial O(1)    -----> Subproblems: 2 halves  -----> Combine: Heavy O(n) |
+|  Result: T(n) = 2T(n/2) + O(n)  ==>  O(n log n)                               |
++-------------------------------------------------------------------------------+
+
++-------------------------------------------------------------------------------+
+|                                  QUICK SORT                                   |
+|  Divide: Heavy O(n)      -----> Subproblems: 2 partitions -> Combine: Trivial O(1) |
+|  Result: T(n) = 2T(n/2) + O(n)  ==>  O(n log n) average                       |
++-------------------------------------------------------------------------------+
+
++-------------------------------------------------------------------------------+
+|                                 BINARY SEARCH                                 |
+|  Divide: Trivial O(1)    -----> Subproblems: 1 half    -----> Combine: Trivial O(1) |
+|  Result: T(n) = T(n/2) + O(1)   ==>  O(log n)                                 |
++-------------------------------------------------------------------------------+
+```
+
+---
+
+## Practical Decision Guide: Which One to Use?
 
 1. **Choose Merge Sort when**:
-   - You need a guaranteed upper bound of $O(n \log n)$ without worst-case degradation.
-   - Preserving the relative order of identical elements (**stability**) is mandatory (e.g., sorting users by date after previously sorting by name).
-   - You are sorting linked lists or streaming data from disk (external merge sort).
+   - You need a guaranteed upper bound of $O(n \log n)$ with zero risk of $O(n^2)$ degradation.
+   - Preserving the relative order of identical elements (**stability**) is mandatory.
+   - You are sorting linked lists or performing external sorting on datasets that exceed RAM.
 
 2. **Choose Quick Sort when**:
-   - You want fast general-purpose in-memory sorting. With randomized or median-of-three pivots, its small constant factors and sequential cache locality beat Merge Sort and Heap Sort.
-   - Auxiliary RAM is strictly constrained and you cannot afford Merge Sort's $O(n)$ memory allocation.
+   - You need high-speed, general-purpose in-memory sorting.
+   - Memory footprint is strictly constrained ($O(\log n)$ stack space vs Merge Sort's $O(n)$ allocation).
+   - Exploiting hardware CPU cache locality is important.
 
-3. **Choose Binary Insertion Sort when**:
-   - The array size is very small ($n < 64$), where simple loops and high cache locality outperform the overhead of recursive calls.
-   - The comparison operation is expensive (e.g., complex hashing or deep equality checks) but the collection fits in L1 cache.
-   - Building a production hybrid sorting algorithm like **Timsort** or **Introsort**.
+3. **Choose Binary Search when**:
+   - The dataset is already sorted (or sorted once up front, followed by many searches).
+   - You need instantaneous, logarithmic lookups ($O(\log n)$) across large arrays (e.g., searching 1 million items in at most 20 comparisons).
+   - Performing range queries (e.g., lower bound, upper bound, or exact match index) in sorted keys.
+
