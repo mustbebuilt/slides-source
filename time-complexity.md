@@ -1,15 +1,27 @@
-# Time Complexity: O(1) and O(n)
+# Time Complexity: O(1), O(n), and O(n log n)
 
 Time complexity describes how the amount of work an operation does grows as
 the input grows. Here, **n** is the number of items in a collection.
 
 - **O(1) — constant time:** the work stays roughly the same as `n` grows.
-- **O(n) — linear time:** the work grows in proportion to `n`. An operation
+- **O(n) — linear time:** the work grows in direct proportion to `n`. An operation
   may need to inspect or move every item.
+- **O(n log n) — linearithmic (or quasilinear) time:** the work grows faster than
+  linear but vastly slower than quadratic ($O(n^2)$). It is the characteristic
+  benchmark for efficient divide-and-conquer algorithms, notably sorting.
 
 Big O describes growth, not an exact number of seconds. It also describes an
 upper bound: an O(n) search might finish on its first check, but in the worst
 case it checks all `n` items.
+
+### Growth comparison across complexity classes
+
+| Collection size ($n$) | O(1) | O(n) | O(n log₂ n) | O(n²) |
+| --- | --- | --- | --- | --- |
+| 10 | 1 | 10 | ~33 | 100 |
+| 1,000 | 1 | 1,000 | ~9,966 | 1,000,000 |
+| 100,000 | 1 | 100,000 | ~1,660,964 | 10,000,000,000 |
+| 1,000,000 | 1 | 1,000,000 | ~19,931,569 | 1,000,000,000,000 |
 
 ## Common operations
 
@@ -28,6 +40,16 @@ by shifting an array on every dequeue would instead take O(n).
 
 `**` Tail operations are O(1) when the implementation keeps a tail reference.
 Without one, finding the tail of a linked list takes O(n).
+
+### Sorting operations
+
+| Algorithm / Method | Typical average time | Worst-case time | Auxiliary space | Strategy |
+| --- | --- | --- | --- | --- |
+| `Array.Sort()` / `List<T>.Sort()` | O(n log n) | O(n log n) | O(log n) | Hybrid Introsort (Quick Sort + Heap Sort fallback) |
+| Merge Sort | O(n log n) | O(n log n) | O(n) | Divide and Conquer (halve & merge) |
+| Quick Sort | O(n log n) | O(n²) | O(log n) | Divide and Conquer (partition around pivot) |
+| Binary Insertion Sort | O(n²) | O(n²) | O(1) | Binary search for slot (O(n log n) comparisons) + array shifts |
+| Naive Sorts (Bubble, Selection, Insertion) | O(n²) | O(n²) | O(1) | Nested loops comparing every element |
 
 ## Why the costs differ
 
@@ -99,6 +121,83 @@ if (node is not null)
 }
 ```
 
+### O(n log n) and divide-and-conquer (sorting)
+
+An **O(n log n)** runtime—often called **linearithmic** or **quasilinear** time—emerges
+when an algorithm breaks a problem down into halves (logarithmic depth) and performs
+linear work across each level of division.
+
+#### The intuition behind n × log n
+
+To see why $O(n \log n)$ is the standard benchmark for efficient sorting and
+divide-and-conquer algorithms, break it into its two constituent factors:
+
+1. **The Logarithmic factor ($\log_2 n$):**
+   When an algorithm repeatedly divides a collection of size $n$ in half, the maximum
+   number of times it can split before reaching single-element base cases is
+   $\log_2 n$.
+   - For an array of 8 items: $8 \rightarrow 4 \rightarrow 2 \rightarrow 1$ requires $3$ divisions ($\log_2 8 = 3$).
+   - For an array of 1,024 items: only $10$ divisions ($\log_2 1024 = 10$).
+   - For an array of 1,000,000 items: only $\approx 20$ divisions ($\log_2 10^6 \approx 19.93$).
+
+2. **The Linear factor ($n$):**
+   At each level of the recursion tree, the algorithm must still process all $n$ items:
+   - In **Merge Sort**, it compares and merges pairs of sorted subarrays at each level ($O(n)$ work per level).
+   - In **Quick Sort**, it scans and partitions elements around a pivot across each level ($O(n)$ work per level on average).
+
+3. **The Multiplier ($n \times \log_2 n$):**
+   Multiplying $n$ units of work across $\log_2 n$ tree levels yields **$O(n \log n)$** total operations.
+
+```
+Recursion Tree (e.g., Merge Sort with n = 8):
+
+Level 0:  [ . . . . . . . . ]               8 items processed       = 8 operations (n)
+                 /        \
+Level 1:  [ . . . . ]  [ . . . . ]          4 + 4 items merged      = 8 operations (n)
+           /      \      /      \
+Level 2:  [ .. ] [ .. ] [ .. ] [ .. ]       2 + 2 + 2 + 2 merged    = 8 operations (n)
+          / \    / \    / \    / \
+Level 3:  [.] [.] [.] [.] [.] [.] [.] [.]   Base cases (size 1)
+          ----------------------------------------------------------------------------
+          Height = log₂(8) = 3 levels       Total Work = 3 × 8      = 24 ≈ n log₂(n)
+```
+
+#### Why O(n log n) is the theoretical gold standard
+
+Mathematically, any comparison-based sorting algorithm requires at least
+$\Omega(n \log n)$ comparisons in the worst case (proven by the decision tree
+model, where distinguishing between $n!$ possible permutations requires a tree
+depth of $\lceil \log_2(n!) \rceil \approx n \log_2 n - 1.44n$). You cannot sort
+faster than $O(n \log n)$ using comparisons alone.
+
+Contrast this with naive sorting algorithms like Bubble Sort, Selection Sort,
+or standard Insertion Sort, which compare every element against every other
+element ($O(n^2)$):
+
+- Sorting **100,000 items** with an $O(n^2)$ algorithm takes roughly **10 billion** operations.
+- Sorting **100,000 items** with an $O(n \log n)$ algorithm takes roughly **1.7 million** operations.
+- That is a **~5,800× speedup**.
+
+#### C# sorting in practice
+
+In .NET, `Array.Sort()` and `List<T>.Sort()` use **Introsort** (an adaptive hybrid
+algorithm combining Quick Sort, Heap Sort when recursion depth gets too deep,
+and Insertion Sort for small partitions). This guarantees $O(n \log n)$ performance
+without the worst-case $O(n^2)$ pitfall of basic Quick Sort:
+
+```csharp
+var numbers = new List<int> { 45, 12, 89, 3, 27, 64 };
+
+// O(n log n): In-place Introsort (Quick Sort + Heap Sort fallback)
+numbers.Sort();
+
+// O(n log n): LINQ OrderBy buffers elements and sorts upon iteration
+var sortedAscending = numbers.OrderBy(n => n).ToList();
+
+// Binary search on an already sorted list is O(log n)
+int index = numbers.BinarySearch(27); // O(log n)
+```
+
 ## Choosing a structure
 
 - Choose an array or `List<T>` when you need fast index access.
@@ -107,6 +206,10 @@ if (node is not null)
 - Choose a linked list when you have a node/position and need frequent
   insertions or removals there; it is not automatically faster than a list
   when you first have to search for that position.
+- Expect **O(n log n)** whenever you sort a collection using standard comparison
+  methods (`List<T>.Sort()`, `Array.Sort()`, or LINQ `.OrderBy()`). If your application
+  requires frequent lookups without paying the $O(n \log n)$ sort cost up front,
+  consider a `Dictionary<TKey, TValue>` or `HashSet<T>` for O(1) average lookups.
 
 The actual performance can also depend on memory allocation and cache
 behavior, but these complexity classes are useful for comparing how operations
